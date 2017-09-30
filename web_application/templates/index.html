@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <style>
+
+      #map {
+        height: 100%;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>TweetMapper</h3>
+
+      <form name="select-keyword" action="/" method="post" >
+         <label for="selkey">Select Keyword:</label>
+         <select name="keyword" class="form-control" id="selkey" onchange="submitForm(this)">
+          <option value="">Select Keyword</option>
+          <option value="keyword 1">movies</option>
+          <option value="keyword 2">technology</option>
+          <option value="keyword 3">sports</option>
+          <option value="keyword 4">life</option>
+          <option value="keyword 5">news</option>
+          <option value="keyword 6">travel</option>
+          <option value="keyword 7">health</option>
+          <option value="keyword 8">awesome</option>
+          <option value="keyword 9">energy</option>
+          <option value="keyword 10">music</option>
+         </select>
+
+         <label for="geokey">Select Geolocation distance:</label>
+         <select name="geo_dist" class="form-control" id="geokey" onchange="submitForm(this)">
+          <option value="">Select Distance(km)</option>
+          <option value="d1">10</option>
+          <option value="d2">50</option>
+          <option value="d3">100</option>
+          <option value="d4">200</option>
+          <option value="d5">500</option>
+          <option value="d6">1000</option>
+          <option value="d7">5000</option>
+         </select>
+      <input type="submit" value="update map" />
+      </form>
+
+      <h3>You have selected {{key| safe}} keyword</h3>
+
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+    <p id="demo4"></p>
+
+    <div id="map"></div>
+
+    <script>
+
+      function initMap() {
+
+
+        var tweets2 = {{tweets| safe}};
+        var size=0;
+        size = tweets2.length;
+        document.getElementById("demo").innerHTML = "There are " + size + " tweets";
+
+          var latitude = [];
+          var longitude = [];
+
+          for(var i = 0; i < size; i++) {
+
+            latitude[i]=tweets2[i]["_source"]["coordinates"][0];
+            longitude[i]=tweets2[i]["_source"]["coordinates"][1];
+          }
+
+        var uluru = {lat: {{lat| safe}} , lng: {{long| safe}}};
+        var markers;
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: uluru
+        });
+
+        var iconBase = 'http://maps.google.com/mapfiles/kml/paddle/';
+        var icons = {
+          positive: {
+
+            url: iconBase + 'grn-circle.png',
+            scaledSize : new google.maps.Size(22, 40)
+          },
+          neutral: {
+
+            url: iconBase + 'blu-circle.png',
+            scaledSize : new google.maps.Size(22, 40),
+          },
+          negative: {
+
+            url: iconBase + 'red-circle.png',
+            scaledSize : new google.maps.Size(22, 40),
+          }
+        };
+
+          var text = "";
+          var infoWindow = new google.maps.InfoWindow();
+          var click_lat = null;
+          var click_lng = null;
+
+          google.maps.event.addListener(map, "click", function(event) {
+            click_lat = event.latLng.lat();
+            click_lng=event.latLng.lng();
+            document.getElementById("demo3").innerHTML = click_lat;
+            document.getElementById("demo4").innerHTML = click_lng;
+
+          });
+
+          for(var i = 0; i < size; i++) {
+
+            var data = tweets2[i]["_source"]["text"];
+            var sentiment = tweets2[i]["_source"]["sentiment"]
+            if (sentiment > 0) {
+                sentiment = "positive";
+            } else if (sentiment < 0) {
+                sentiment = "negative";
+            } else {
+                sentiment = "neutral";
+            }
+            var markers = new google.maps.Marker({
+              position: {lat:latitude[i] , lng: longitude[i]},
+              map: map,
+              icon : icons[sentiment]
+      
+        });
+
+              (function (markers, data) {
+                google.maps.event.addListener(markers, "click", function (e) {
+                    infoWindow.setContent("<div style = 'width:200px;min-height:40px'>" + data + "</div>");
+                    infoWindow.open(map, markers);
+                });
+            })(markers, data);
+
+
+
+
+              //text += " " + latitude[i] + " , " + longitude[i] + "<br>";
+      }
+            document.getElementById("demo2").innerHTML = text;
+
+    }
+
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNmoSVBXV-tuESUubN4Zrp3fqRTlSwMKo&callback=initMap">
+    </script>
+  </body>
+</html>
