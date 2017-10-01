@@ -7,13 +7,13 @@ import time
 #Access_Keys to be obtained from Twitter Application
 #Used to make Twitter API request
 
-TWITTER_ACCESS_TOKEN = '598322060-85YdYXf17Ecf30GXZdT7hNqypapNUfIbk6JzCHxv'
-TWITTER_ACCESS_TOKEN_SECRET = 'M6M1MLGQCNm8Rfb3wUOMx5h9b6i0LJuA25DbDgFMhlIwk'
+TWITTER_ACCESS_TOKEN = ''
+TWITTER_ACCESS_TOKEN_SECRET = ''
 
 #Consumer keys to access Twitter Application 
 
-TWITTER_APP_KEY = 'pDLnK0jtrrj3TOlj9eKr7yOQt'
-TWITTER_APP_KEY_SECRET = '6rZ2NeZq7MjC0lQVA501zAtuBso845njET2TTReENJRrmJTbet'
+TWITTER_APP_KEY = ''
+TWITTER_APP_KEY_SECRET = ''
 
 SQS_QUEUE_NAME='Twittrends'
 
@@ -26,7 +26,7 @@ twitterauth = Twython(app_key=TWITTER_APP_KEY,
 
 #Initializing SQS
 
-sqs = boto3.resource( 'sqs', aws_access_key_id="AKIAI37GWBF2JTQEFKDQ", aws_secret_access_key="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",region_name='us-east-1')
+sqs = boto3.resource( 'sqs', aws_access_key_id="", aws_secret_access_key="",region_name='us-east-1')
 
 queue = sqs.get_queue_by_name(QueueName=SQS_QUEUE_NAME)
 
